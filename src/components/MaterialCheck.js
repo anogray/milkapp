@@ -13,7 +13,6 @@ import React, { Component, useState, useEffect } from "react";
 import Box from "@material-ui/core/Box";
 import Input from "@material-ui/core/Input";
 import MaterialUIPickers from "./Calendar"
-
 import moment from "moment";
 import { Button, TextField } from "@material-ui/core";
 
@@ -23,6 +22,7 @@ import "../styles.css"
 import ReactLoading from 'react-loading';
 import auth from "../auth/Auth"
 import { useHistory, useLocation } from "react-router";
+import AddModal from "./AddModal";
 
 
 const useStyles = makeStyles({
@@ -55,7 +55,7 @@ let rows = [];
 console.log("rowlength",rows.length)
 
 
-export default function AcccessibleTable() {
+export default function AcccessibleTable(props) {
 
 //auth("hola","")
 let location = useLocation();
@@ -280,25 +280,21 @@ let ab = 2;
     setcurrAmt(currAmt)
   }
 
+  const headingTable = (
+      <>
+      <TableRow>
+      <TableCell align="center">FULL CREAM</TableCell>
+      <TableCell align="center">TONED</TableCell>
+      <TableCell align="center">ATTA BREAD</TableCell>
+      <TableCell align="center">BROWN ATTA BREAD</TableCell>
+      <TableCell align="center">AMOUNT (₹)</TableCell>              
+      </TableRow>
+      </>
+  )
 
-  const tableContent = (
-    <Box m={"10%"}>
-        <TableContainer  component={Paper}>
-         <MaterialUIPickers Dateprop= {epochtime} Data={rows}/>
-            <Table aria-label="caption table">
-              <TableHead>
-                <TableRow>
-                  <TableCell align="center">DATE</TableCell>
-                  <TableCell align="center">FULL CREAM</TableCell>
-                  <TableCell align="center">TONED</TableCell>
-                  <TableCell align="center">ATTA BREAD</TableCell>
-                  <TableCell align="center">BROWN ATTA BREAD</TableCell>
-                  <TableCell align="center">AMOUNT (₹)</TableCell>
-                </TableRow>
-                <TableRow>
-                  <TableCell align="center">{currDate} ({dayName})</TableCell>
-    
-                  <TableCell align="center">
+  const selectedRow = (
+    <>
+    <TableCell align="center">
                     <form className={classes.input} noValidate autoComplete="off">
                       <TextField id="standard-basic" value={data["full-cream"]} name="full-cream" label="Enter" onChange={handleChange}/>
                     </form>
@@ -325,6 +321,20 @@ let ab = 2;
                   <TableCell align="center">
                     {currAmt}
                   </TableCell>
+
+    </>
+  )
+  const headerTableContent = (
+    <>
+                <TableHead>
+                <TableRow>
+                  <TableCell align="center">DATE</TableCell>
+                  {headingTable}
+                </TableRow>
+                <TableRow>
+                  <TableCell align="center">{currDate} ({dayName})</TableCell>
+                    {selectedRow}
+                  
                   <TableCell align="center">
                     <Button variant="contained" color="primary" name="add" onClick={handleRow}>
                       SAVE
@@ -332,6 +342,18 @@ let ab = 2;
                   </TableCell>
                 </TableRow>
               </TableHead>
+    </>
+  )
+
+
+  const tableContent = (
+    <Box m={"10%"}>
+    
+    <AddModal headCell = {headingTable} tableCell = {headerTableContent} selectedRow={selectedRow}/>
+        <TableContainer  component={Paper}>
+         <MaterialUIPickers Dateprop= {epochtime} Data={rows}/>
+            <Table aria-label="caption table">
+              {headerTableContent}
               <TableBody>
               {
                   rows.length ? rows.map((row,idx) => {
@@ -360,7 +382,7 @@ let ab = 2;
         </Box>
   )
 
- console.log("dataaaa",data["full-cream"])
+ 
 
   return (
     <React.Fragment>
