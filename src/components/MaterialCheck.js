@@ -63,7 +63,7 @@ const ValidAuth = (locations)=>{
   {
      //console.log("false locations",locations)
 
-  alert("Please Log in First")
+  alert("Please Log in First ")
   history.push("/");
   }
 
