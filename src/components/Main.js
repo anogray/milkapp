@@ -38,15 +38,10 @@ const Main = () => {
            
     
     return ( 
-        <div style={{margin:"300px"}}>
+        
         <AcccessibleTable/>
-        {/*<ReactTable  
-            data={data}  
-            columns={columns}  
-            // defaultPageSize = {6}  
-            // pageSizeOptions = {[2,4, 6]}  
-        />  */}
-         </div>
+        
+         
      );
 }
  

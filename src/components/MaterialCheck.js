@@ -12,12 +12,17 @@ import Radio from "@material-ui/core/Radio";
 import React, { Component, useState, useEffect } from "react";
 import Box from "@material-ui/core/Box";
 import Input from "@material-ui/core/Input";
+import MaterialUIPickers from "./Calendar"
 
 import moment from "moment";
 import { Button, TextField } from "@material-ui/core";
 
 import db from "../config/firebase"
-// import "../styles.css"
+import "../styles.css"
+
+import ReactLoading from 'react-loading';
+import auth from "../auth/Auth"
+import { useHistory, useLocation } from "react-router";
 
 
 const useStyles = makeStyles({
@@ -47,33 +52,78 @@ const useStyles = makeStyles({
 //   createData("gh", "XXXXX", "XXXXX", "XXXXX"),
 // ];
 let rows = [];
+console.log("rowlength",rows.length)
+
+const ValidAuth = (locations)=>{
+
+  let history = useHistory();
+
+
+  if(locations.auth==undefined)
+  {
+     //console.log("false locations",locations)
+
+  alert("Please Log in First")
+  history.push("/");
+  }
+
+else{
+  alert("Logged In")
+  console.log("true locations",locations)
+}
+}
 
 export default function AcccessibleTable() {
+
+//auth("hola","")
+let location = useLocation();
+let history = useHistory();
+
+
   const classes = useStyles();
+  const [locations, setlocations] = useState(location)
   const [data, setData] = useState({});
   const [currAmt, setcurrAmt] = useState(0);
   const [clear, setclear] = useState({})
   const [allData, setallData] = useState({"full-cream":"","toned":""});
   
-  const formulaFull = {half:10,full:20}
-  const formulaToned = {half:5,full:10}
+  const formulaFull = {half:28,full:55}
+  const formulaToned = {half:23,full:45}
+  const formulaBread = {atta:35, brown:40}
 
+
+
+  //get the 3 letters of current day
+  const Example = ({ type, color }) => (
+    <ReactLoading type={"spin"} color={"rgb(38 108 223)"} />
+  );
+  
+
+  let dayName = String(moment()._d)
+  dayName = dayName.substring(0,3);
+
+  console.log("totalCurrDate",dayName)
   let currDate = moment().format("DD-MM-yyyy");
-
+  console.log("fullcurrDate",currDate)
   let epochtime = moment(currDate,"DD-MM-yyyy").valueOf()
-  //console.log("epoch time",epochtime)
+  console.log("epoch time",epochtime)
   // let nextp = "15-08-2015"
   // epochtime = moment(nextp,"DD-MM-yyyy").valueOf()
   // console.log("epoch time",epochtime)
+let ab = 2;
 
+  ValidAuth(locations);
 
   
   useEffect(() => {
         const dataCall = async() => {
-          await db.collection("milkdata").onSnapshot(snapshot => {
-           // console.log("inside useffect")
+          let idx=0;
+          await db.collection("milkdata").onSnapshot((snapshot) => {
+            console.log("snapshot",snapshot,idx)
            //setallData(snapshot.docs.map(doc=>({date:doc.id, dataBody:doc.data()})))
-           setallData(snapshot.docs.map(doc=>({dataBody:doc.data()})))
+           {setallData(snapshot.docs.map((doc)=>{
+             console.log("doc",doc);
+            return ({dataBody:doc.data()})}))}
         })
 
       }
@@ -98,21 +148,61 @@ export default function AcccessibleTable() {
 
   const handleRow = async(e)=>{
     e.preventDefault();
+
+    let checkAll = {}
     if(currAmt!=0)
     {
-    if(data["full-cream"]=="")
-    {
-      data["full-cream"]=0
+      if(!data["full-cream"])
+    { checkAll["full-cream"] = 0;
     }
-    if(data["toned"]=="")
-    {
-      data["toned"]=0
+    else{
+      checkAll["full-cream"] = data["full-cream"];
     }
-    let saveData = {...data,currDate:currDate,currAmt:currAmt,epoch:epochtime}
-    let res = await db.collection("milkdata").doc(currDate).set(saveData)
-    //console.log("db response",db)
+    if(!data["toned"])
+    { checkAll["toned"] = 0;
+    }
+    else{
+      checkAll["toned"] = data["toned"];
+    }
+
+    // if(data["full-cream"]=="")
+    // {
+    //   data["full-cream"]=0
+    // }
+    // if(data["toned"]=="" )
+    // {
+    //   data["toned"]=0
+    // }
+    // if(!data["toned"]){
+    //   data["toned"]=0
+    // }
+    if(!data["attabread"])
+    { checkAll["attabread"] = 0;
+    }
+    else{
+      checkAll["attabread"] = data["attabread"];
+    }
+    if(!data["brownbread"])
+    { checkAll["brownbread"] = 0;
+    }
+    else{
+      checkAll["brownbread"] = data["brownbread"];
+    }
+    
+    let saveData = {...checkAll,currDate:currDate,dayName,currAmt:currAmt,epoch:epochtime}
+
+
+    try{
+      let res = await db.collection("milkdata").doc(currDate).set(saveData)
+      console.log("res",res)
+      //console.log("db response",db)
+    }
+    catch(err){
+      console.log("errres",err)
+    }
     // let obj={}
-     setData({...data , "full-cream":"", "toned":""})
+    setData({...data , "full-cream":"", "toned":"", "brownbread":"","attabread":""})
+
      setcurrAmt(0)
     }
   }
@@ -132,6 +222,9 @@ export default function AcccessibleTable() {
 
     let full = chdata["full-cream"];
     let toned = chdata["toned"];
+    let attaBread = chdata["attabread"];
+    let brownBread = chdata["brownbread"];
+
     let currAmt = 0;
 
     if(full)
@@ -153,26 +246,41 @@ export default function AcccessibleTable() {
       }
     }
 
+    if(attaBread){
+      currAmt+= +(attaBread*formulaBread["atta"])
+    }
+
+    if(brownBread){
+      currAmt+= +(brownBread*formulaBread["brown"])
+    }
+    console.log("currAmt",currAmt,typeof(currAmt))
+    currAmt = +currAmt;
+    console.log("After currAmt",currAmt,typeof(currAmt))
+
     // console.log("Amt current",currAmt);
     setcurrAmt(currAmt)
   }
   
- // console.log("db receeoved",rows)
+ console.log("dataaaa",data["full-cream"])
 
   return (
 //{`${classes.roottabsize}`}
-    <TableContainer className={""} component={Paper}>
-      <Box mx={""}>
+       <Box m={"10%"}>
+   
+    <TableContainer  component={Paper}>
+     <MaterialUIPickers Dateprop= {epochtime} Data={rows}/>
         <Table aria-label="caption table">
           <TableHead>
             <TableRow>
               <TableCell align="center">DATE</TableCell>
               <TableCell align="center">FULL CREAM</TableCell>
               <TableCell align="center">TONED</TableCell>
+              <TableCell align="center">ATTA BREAD</TableCell>
+              <TableCell align="center">BROWN ATTA BREAD</TableCell>
               <TableCell align="center">AMOUNT (₹)</TableCell>
             </TableRow>
             <TableRow>
-              <TableCell align="center">{currDate}</TableCell>
+              <TableCell align="center">{currDate} ({dayName})</TableCell>
 
               <TableCell align="center">
                 <form className={classes.input} noValidate autoComplete="off">
@@ -183,6 +291,18 @@ export default function AcccessibleTable() {
               <TableCell align="center">
                 <form className={classes.input} noValidate autoComplete="off">
                   <TextField id="standard-basic" value={data["toned"]} name="toned" label="Enter" onChange={handleChange} />
+                </form>
+                </TableCell>
+
+                <TableCell align="center">
+                <form className={classes.input} noValidate autoComplete="off">
+                  <TextField id="standard-basic" value={data["attabread"]} name="attabread" label="Enter" onChange={handleChange} />
+                </form>
+                </TableCell>
+
+                <TableCell align="center">
+                <form className={classes.input} noValidate autoComplete="off">
+                  <TextField id="standard-basic" value={data["brownbread"]} name="brownbread" label="Enter" onChange={handleChange} />
                 </form>
               </TableCell>
 
@@ -197,17 +317,30 @@ export default function AcccessibleTable() {
             </TableRow>
           </TableHead>
           <TableBody>
-            {rows.length ? rows.map((row) => (
+          {
+              rows.length ? rows.map((row,idx) => {
+              
+              {/* if(idx<=1) */}
+              {
+                return (
               <TableRow key={row.dataBody.currDate}>
-                <TableCell align="center">{row.dataBody.currDate}</TableCell>
+                <TableCell align="center">{row.dataBody.currDate} ({row.dataBody.dayName})</TableCell>
                 <TableCell align="center">{row.dataBody["full-cream"]}</TableCell>
                 <TableCell align="center">{row.dataBody.toned}</TableCell>
+                <TableCell align="center">{row.dataBody.attabread}</TableCell>
+                <TableCell align="center">{row.dataBody.brownbread}</TableCell>
                 <TableCell align="center">{row.dataBody.currAmt}</TableCell>
               </TableRow>
-            )):""}
+                )
+              }
+              }
+              ) : ""
+            }
           </TableBody>
         </Table>
-      </Box>
     </TableContainer>
+   { (rows.length==0) && 
+    <div className="loader" style={{"margin-left":"550px"}}>{Example("spinningBubbles","rgb(38 108 223)")}</div>}
+    </Box>
   );
 }
