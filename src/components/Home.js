@@ -1,4 +1,4 @@
-import React, { Component , useState} from 'react';
+import React, { Component , useEffect, useState} from 'react';
 
 // import AcccessibleTable from './MaterialCheck';
 import { Route, Switch, BrowserRouter, useHistory, Redirect } from "react-router-dom";
@@ -13,6 +13,17 @@ const Home = ()=>{
 
   const [name, setMail] = useState("");
   const [password, setPass] = useState("");
+  const [stored,setStored] = useState(false);
+
+  useEffect(()=>{
+    const isStored = localStorage.getItem("isStored");
+    console.log("getitem",isStored)
+    if(isStored=="true"){
+      history.push({pathname:"./items",auth:true})
+    }
+
+  },[])
+
 
 
   const handleSubmit = ()=>{

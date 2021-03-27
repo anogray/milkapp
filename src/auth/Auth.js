@@ -1,5 +1,5 @@
 import db from "../config/firebase"
-import React, { Component, useState  } from 'react';
+import React, { Component, useEffect, useState  } from 'react';
 // var bcrypt = require('bcryptjs');
 // import bcrypt from "bcryptjs"
 import { useHistory, useLocation } from 'react-router-dom';
@@ -9,19 +9,27 @@ const Example = () => (
     <ReactLoading type={"spin"} color={"rgb(38 108 223)"} />
   );
 
-const DbAuthCall = async(detailsauth)=>{
-        
-    let history = useHistory();
+
+
+ const Auth = ()=>{
+   // console.log("locations",logins)
+   let locations = useLocation();
+   let history = useHistory();
+
+
+   const [location, setlocation] = useState(locations)
+
+   const DbAuthCall = async(detailsauth)=>{
 
     try{
         let res = await db.collection("authUsers").doc(detailsauth.name).get(detailsauth.name)
         let firebaseDetails = res.data();
     
-        //console.log("user field",res.data())
         if(firebaseDetails.name==detailsauth.name && firebaseDetails.password==detailsauth.password )
         {
             let auth = true;
         //history.push("./items")
+        //localStorage.setItem("isStored","true");
         history.push({pathname:"./items",auth:true})
         }
         else{
@@ -35,15 +43,9 @@ const DbAuthCall = async(detailsauth)=>{
 
 }
 
- const Auth = ()=>{
-   // console.log("locations",logins)
-   let locations = useLocation();
-   let history = useHistory();
-
-
-   const [location, setlocation] = useState(locations)
-
-   console.log("locationss",location)
+   useEffect(() => {
+      
+    console.log("locationss",location)
    let {obj} = location
    if(obj==undefined){
        history.push("/")
@@ -54,6 +56,9 @@ const DbAuthCall = async(detailsauth)=>{
    
     DbAuthCall(detailsauth);
    }
+   }, [])
+
+   
 
 
 
