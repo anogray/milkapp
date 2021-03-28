@@ -69,6 +69,20 @@ let history = useHistory();
   const [clear, setclear] = useState({})
   const [allData, setallData] = useState({"full-cream":"","toned":""});
   const [isvalid, setisvalid] = useState(false)
+  const [modalIsOpen, setIsOpen] = useState(false);
+  const [fromModalDate, setfromModalDate] = React.useState(new Date(moment(moment().format("DD-MM-yyyy"),"DD-MM-yyyy").valueOf()));
+  const [epochFromtime, setepochFromtime] = useState(moment(fromModalDate,"DD-MM-yyyy").valueOf());
+
+  const handlefromModalDate = (date) => {
+    let newTo = date
+    setfromModalDate(newTo);
+    let newEpoch = moment(newTo,"DD-MM-yyyy").valueOf()
+    setepochFromtime(newEpoch)
+    //console.log("ModalDate",newTo,"modalEpoch",newEpoch)
+    //console.log("from",epochFromtime)
+};
+
+  console.log("DateModal",fromModalDate,"epoch",epochFromtime)
   
   const formulaFull = {half:28,full:55}
   const formulaToned = {half:23,full:45}
@@ -91,7 +105,6 @@ const ValidAuth = (locations,isStored)=>{
   }
 
 else{
-  console.log("gotin")
   alert("Logged In")
   setisvalid(true);
   
@@ -148,7 +161,11 @@ let ab = 2;
       }
       dataCall();
     },[])
-  
+
+    // useEffect(() => {
+    //   console.log("modal UseEffect",modalIsOpen)
+    // }, [modalIsOpen]);
+    
     const compareDescDay = (allData)=>{
       //console.log(" sort order",allData,allData[0])
       let sortedArr = allData.sort(
@@ -164,6 +181,17 @@ let ab = 2;
       //console.log("compareto",allData)
     rows = compareDescDay(allData)
     }
+
+
+    function openModal() {
+      setIsOpen(true);
+    }
+     
+      function closeModal(){
+        setIsOpen(false);
+      }
+
+
 
   const handleRow = async(e)=>{
     e.preventDefault();
@@ -208,7 +236,27 @@ let ab = 2;
       checkAll["brownbread"] = data["brownbread"];
     }
     
-    let saveData = {...checkAll,currDate:currDate,dayName,currAmt:currAmt,epoch:epochtime}
+    let saveData=''
+    console.log("midalOff",modalIsOpen)
+    if(!modalIsOpen){
+     
+       saveData = {...checkAll,currDate:currDate,dayName,currAmt:currAmt,epoch:epochtime}
+
+    }
+    else if(modalIsOpen==true){
+
+    let currDate = moment(epochFromtime).format("DD-MM-yyyy")
+    let dayName = String(fromModalDate)
+    dayName = dayName.substring(0,3)
+    // console.log("ModalDate",fromModalDate,"modalEpoch",epochFromtime,"currDate",currDate,"day",dayName)
+
+      saveData = {...checkAll,currDate:currDate,dayName,currAmt:currAmt,epoch:epochFromtime}
+      // console.log("SendindModalData",saveData)
+    
+      closeModal()
+      setfromModalDate(new Date(moment(moment().format("DD-MM-yyyy"),"DD-MM-yyyy").valueOf()));
+      setepochFromtime(moment(fromModalDate,"DD-MM-yyyy").valueOf());
+    }
 
 
     try{
@@ -282,19 +330,20 @@ let ab = 2;
 
   const headingTable = (
       <>
-      <TableRow>
-      <TableCell align="center">FULL CREAM</TableCell>
-      <TableCell align="center">TONED</TableCell>
-      <TableCell align="center">ATTA BREAD</TableCell>
-      <TableCell align="center">BROWN ATTA BREAD</TableCell>
-      <TableCell align="center">AMOUNT (₹)</TableCell>              
-      </TableRow>
+                {!modalIsOpen && <TableCell align="center">DATE</TableCell>}
+                <TableCell align="center">FULL CREAM</TableCell>
+                <TableCell align="center">TONED</TableCell>
+                <TableCell align="center">ATTA BREAD</TableCell>
+                <TableCell align="center">BROWN ATTA BREAD</TableCell>
+                <TableCell align="center">AMOUNT (₹)</TableCell>
       </>
   )
 
   const selectedRow = (
-    <>
-    <TableCell align="center">
+            <>
+              <TableRow>
+                {!modalIsOpen && <TableCell align="center">{currDate} ({dayName})</TableCell>}
+                  <TableCell align="center">
                     <form className={classes.input} noValidate autoComplete="off">
                       <TextField id="standard-basic" value={data["full-cream"]} name="full-cream" label="Enter" onChange={handleChange}/>
                     </form>
@@ -321,27 +370,18 @@ let ab = 2;
                   <TableCell align="center">
                     {currAmt}
                   </TableCell>
-
-    </>
-  )
-  const headerTableContent = (
-    <>
-                <TableHead>
-                <TableRow>
-                  <TableCell align="center">DATE</TableCell>
-                  {headingTable}
-                </TableRow>
-                <TableRow>
-                  <TableCell align="center">{currDate} ({dayName})</TableCell>
-                    {selectedRow}
                   
                   <TableCell align="center">
                     <Button variant="contained" color="primary" name="add" onClick={handleRow}>
                       SAVE
                     </Button>
                   </TableCell>
-                </TableRow>
-              </TableHead>
+              </TableRow>
+          </>
+  )
+  const headerTableContent = (
+    <>
+                
     </>
   )
 
@@ -349,11 +389,24 @@ let ab = 2;
   const tableContent = (
     <Box m={"10%"}>
     
-    <AddModal headCell = {headingTable} tableCell = {headerTableContent} selectedRow={selectedRow}/>
+    <AddModal headCell = {headingTable} tableCell = {headerTableContent} selectedRow={selectedRow} 
+    handleRow={handleRow} modalIsOpen={modalIsOpen} closeModal={closeModal} openModal={openModal}
+    fromModalDate={fromModalDate} epochFromtime={epochFromtime} handlefromModalDate={handlefromModalDate}
+    />
+
         <TableContainer  component={Paper}>
          <MaterialUIPickers Dateprop= {epochtime} Data={rows}/>
             <Table aria-label="caption table">
-              {headerTableContent}
+            <TableHead>
+                <TableRow>
+                
+                {headingTable}
+                              
+                </TableRow>
+               
+                {selectedRow}
+
+              </TableHead>
               <TableBody>
               {
                   rows.length ? rows.map((row,idx) => {
