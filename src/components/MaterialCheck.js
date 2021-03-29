@@ -15,6 +15,10 @@ import Input from "@material-ui/core/Input";
 import MaterialUIPickers from "./Calendar"
 import moment from "moment";
 import { Button, TextField } from "@material-ui/core";
+import DeleteIcon from '@material-ui/icons/Delete';
+import SaveIcon from '@material-ui/icons/Save';
+
+
 
 import db from "../config/firebase"
 import "../styles.css"
@@ -192,6 +196,16 @@ let ab = 2;
       }
 
 
+  const onDelete = async(rowID)=>{
+      
+        try{
+          let res = await db.collection("milkdata").doc(rowID).delete();
+        }
+        catch(err){
+          alert("Invalid Deleted Item")
+        }
+
+  }
 
   const handleRow = async(e)=>{
     e.preventDefault();
@@ -336,6 +350,7 @@ let ab = 2;
                 <TableCell align="center">ATTA BREAD</TableCell>
                 <TableCell align="center">BROWN ATTA BREAD</TableCell>
                 <TableCell align="center">AMOUNT (₹)</TableCell>
+                
       </>
   )
 
@@ -372,8 +387,14 @@ let ab = 2;
                   </TableCell>
                   
                   <TableCell align="center">
-                    <Button variant="contained" color="primary" name="add" onClick={handleRow}>
-                      SAVE
+                  <Button
+                      variant="contained"
+                      color="primary"
+                      size="large"
+                      className={classes.button}
+                      startIcon={<SaveIcon />}
+                      onClick={handleRow}>
+                      Save
                     </Button>
                   </TableCell>
               </TableRow>
@@ -421,6 +442,16 @@ let ab = 2;
                     <TableCell align="center">{row.dataBody.attabread}</TableCell>
                     <TableCell align="center">{row.dataBody.brownbread}</TableCell>
                     <TableCell align="center">{row.dataBody.currAmt}</TableCell>
+                    <TableCell align="center">
+                    <Button
+                        variant="contained"
+                        color="secondary"
+                        className={classes.button}
+                        startIcon={<DeleteIcon />}
+                        onClick={()=>onDelete(row.dataBody.currDate)} >
+                        Delete
+                      </Button>
+                </TableCell>
                   </TableRow>
                     )
                   }
