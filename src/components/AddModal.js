@@ -57,7 +57,10 @@ export default function AddModal(props) {
           onRequestClose={props.closeModal}
           contentLabel="Example Modal"
         >
-        <button onClick={props.closeModal}>close</button>
+         <Button variant="contained" color="secondary" name="add" onClick={props.closeModal}>
+                      CLOSE
+                    </Button>
+                    
         <MuiPickersUtilsProvider utils={DateFnsUtils}>
         <Grid container justify="space-around">
         <KeyboardDatePicker

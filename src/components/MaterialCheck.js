@@ -245,7 +245,7 @@ let ab = 2;
     }
     else if(modalIsOpen==true){
 
-    let currDate = moment(epochFromtime).format("DD-MM-yyyy")
+    currDate = moment(epochFromtime).format("DD-MM-yyyy")
     let dayName = String(fromModalDate)
     dayName = dayName.substring(0,3)
     // console.log("ModalDate",fromModalDate,"modalEpoch",epochFromtime,"currDate",currDate,"day",dayName)
