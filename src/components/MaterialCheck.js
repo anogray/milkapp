@@ -408,13 +408,21 @@ let ab = 2;
 
 
   const tableContent = (
+    
     <Box m={"10%"}>
     
+    { (rows.length==0) &&
+       <div>
+       <br/>
+       <div className="loader loader_margin" >{Example("spinningBubbles","rgb(38 108 223)")}</div>   
+       <br/>    
+       </div> }
+       
     <AddModal headCell = {headingTable} tableCell = {headerTableContent} selectedRow={selectedRow} 
     handleRow={handleRow} modalIsOpen={modalIsOpen} closeModal={closeModal} openModal={openModal}
     fromModalDate={fromModalDate} epochFromtime={epochFromtime} handlefromModalDate={handlefromModalDate}
     />
-
+      
         <TableContainer  component={Paper}>
          <MaterialUIPickers Dateprop= {epochtime} Data={rows}/>
             <Table aria-label="caption table">
@@ -461,13 +469,6 @@ let ab = 2;
               </TableBody>
             </Table>
         </TableContainer>
-       { (rows.length==0) &&
-       <div>
-       <br/>
-       <div className="loader loader_margin" >{Example("spinningBubbles","rgb(38 108 223)")}</div>       
-       </div> }
-
-        
         </Box>
   )
 
