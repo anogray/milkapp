@@ -464,7 +464,7 @@ let ab = 2;
        { (rows.length==0) &&
        <div>
        <br/>
-       <div className="loader margin" >{Example("spinningBubbles","rgb(38 108 223)")}</div>       
+       <div className="loader loader_margin" >{Example("spinningBubbles","rgb(38 108 223)")}</div>       
        </div> }
 
         
