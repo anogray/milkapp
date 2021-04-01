@@ -199,7 +199,10 @@ let ab = 2;
   const onDelete = async(rowID)=>{
       
         try{
+         let isRemove =  window.confirm("Do you want to remove Items ?")
+         if(isRemove){
           let res = await db.collection("milkdata").doc(rowID).delete();
+         } 
         }
         catch(err){
           alert("Invalid Deleted Item")
