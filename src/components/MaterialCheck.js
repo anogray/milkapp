@@ -344,12 +344,12 @@ let ab = 2;
 
   const headingTable = (
       <>
-                {!modalIsOpen && <TableCell align="center">DATE</TableCell>}
-                <TableCell align="center">FULL CREAM</TableCell>
-                <TableCell align="center">TONED</TableCell>
-                <TableCell align="center">ATTA BREAD</TableCell>
-                <TableCell align="center">BROWN ATTA BREAD</TableCell>
-                <TableCell align="center">AMOUNT (₹)</TableCell>
+                {!modalIsOpen && <TableCell align="center"><b>DATE</b></TableCell>}
+                <TableCell align="center"><b>FULL CREAM</b></TableCell>
+                <TableCell align="center"><b>TONED</b></TableCell>
+                <TableCell align="center"><b>ATTA BREAD</b></TableCell>
+                <TableCell align="center"><b>BROWN ATTA BREAD</b> </TableCell>
+                <TableCell align="center"><b>AMOUNT (₹)</b></TableCell>
                 
       </>
   )
@@ -357,7 +357,7 @@ let ab = 2;
   const selectedRow = (
             <>
               <TableRow>
-                {!modalIsOpen && <TableCell align="center">{currDate} ({dayName})</TableCell>}
+                {!modalIsOpen && <TableCell align="center"><b>{currDate} ({dayName})</b></TableCell>}
                   <TableCell align="center">
                     <form className={classes.input} noValidate autoComplete="off">
                       <TextField id="standard-basic" value={data["full-cream"]} name="full-cream" label="Enter" onChange={handleChange}/>
