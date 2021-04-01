@@ -461,8 +461,13 @@ let ab = 2;
               </TableBody>
             </Table>
         </TableContainer>
-       { (rows.length==0) && 
-        <div className="loader" style={{"margin-left":"550px"}}>{Example("spinningBubbles","rgb(38 108 223)")}</div>}
+       { (rows.length==0) &&
+       <div>
+       <br/>
+       <div className="loader margin" >{Example("spinningBubbles","rgb(38 108 223)")}</div>       
+       </div> }
+
+        
         </Box>
   )
 
