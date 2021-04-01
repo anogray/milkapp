@@ -383,7 +383,7 @@ let ab = 2;
                   </TableCell>
     
                   <TableCell align="center">
-                    {currAmt}
+                  <b>{currAmt}</b>
                   </TableCell>
                   
                   <TableCell align="center">
